@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Lab Monitoring Dashboard</title>
+
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel-2: #1f2937;
+      --line: #334155;
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --green: #22c55e;
+      --red: #ef4444;
+      --yellow: #f59e0b;
+      --blue: #3b82f6;
+      --cyan: #06b6d4;
+      --purple: #8b5cf6;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(135deg, #0b1220, #111827);
+      color: var(--text);
+    }
+
+    .container {
+      width: min(1400px, 95%);
+      margin: 20px auto;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 18px;
+      padding: 18px 20px;
+      border-radius: 18px;
+      background: rgba(17, 24, 39, 0.95);
+      border: 1px solid var(--line);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    }
+
+    .title {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .top-status {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .badge {
+      padding: 9px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      border: 1px solid var(--line);
+      background: #0b1220;
+      color: var(--text);
+      min-width: 130px;
+      text-align: center;
+    }
+
+    .ok {
+      background: rgba(34, 197, 94, 0.16);
+      color: #86efac;
+      border-color: rgba(34, 197, 94, 0.35);
+    }
+
+    .bad {
+      background: rgba(239, 68, 68, 0.16);
+      color: #fca5a5;
+      border-color: rgba(239, 68, 68, 0.35);
+    }
+
+    .warn {
+      background: rgba(245, 158, 11, 0.16);
+      color: #fcd34d;
+      border-color: rgba(245, 158, 11, 0.35);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .panel {
+      background: rgba(17, 24, 39, 0.96);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.22);
+    }
+
+    .panel h2 {
+      margin: 0 0 14px 0;
+      font-size: 20px;
+    }
+
+    .small-muted {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+    }
+
+    .sensor-card {
+      background: linear-gradient(180deg, #0f172a, #111827);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+    }
+
+    .sensor-name {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .sensor-value {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .bar-wrap {
+      width: 100%;
+      height: 10px;
+      background: #0b1220;
+      border: 1px solid #243244;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      transition: width 0.4s ease;
+      background: linear-gradient(90deg, var(--blue), var(--cyan));
+    }
+
+    .states-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .state-item {
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #0f172a;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .state-name {
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .state-pill {
+      min-width: 86px;
+      text-align: center;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid var(--line);
+    }
+
+    .commands-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .command-group {
+      background: #0f172a;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+    }
+
+    .command-group h3 {
+      margin: 0 0 12px 0;
+      font-size: 16px;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 700;
+      color: white;
+      transition: transform 0.12s ease, opacity 0.12s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      opacity: 0.95;
+    }
+
+    .btn-blue { background: var(--blue); }
+    .btn-green { background: var(--green); }
+    .btn-red { background: var(--red); }
+    .btn-yellow { background: var(--yellow); color: #111827; }
+    .btn-cyan { background: var(--cyan); color: #111827; }
+    .btn-purple { background: var(--purple); }
+
+    .alarms-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .alarm-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #0f172a;
+    }
+
+    .footer-info {
+      margin-top: 14px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .log-box {
+      margin-top: 12px;
+      background: #0b1220;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 12px;
+      min-height: 44px;
+      color: #cbd5e1;
+      font-size: 13px;
+    }
+
+    @media (max-width: 1100px) {
+      .grid { grid-template-columns: 1fr; }
+      .cards { grid-template-columns: repeat(2, 1fr); }
+      .states-grid, .commands-grid, .alarms-list { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 700px) {
+      .cards { grid-template-columns: 1fr; }
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .top-status {
+        justify-content: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div>
+        <div class="title">SMART LAB MONITORING</div>
+        <div class="subtitle">
+          Internet dashboard via MQTT Cloud — Sensors, states, alarms, and commands
+        </div>
+      </div>
+
+      <div class="top-status">
+        <div id="badge-connection" class="badge warn">SMART LAB: WAITING</div>
+        <div id="badge-mode" class="badge">Mode: --</div>
+        <div id="badge-system" class="badge">System: --</div>
+        <div id="badge-safe" class="badge">Safe: --</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="panel">
+        <h2>Environmental Sensors</h2>
+        <div class="cards">
+          <div class="sensor-card">
+            <div class="sensor-name">Temperature</div>
+            <div class="sensor-value"><span id="temp-value">--</span> °C</div>
+            <div class="bar-wrap"><div id="temp-bar" class="bar"></div></div>
+          </div>
+
+          <div class="sensor-card">
+            <div class="sensor-name">Humidity</div>
+            <div class="sensor-value"><span id="humidity-value">--</span> %</div>
+            <div class="bar-wrap"><div id="humidity-bar" class="bar"></div></div>
+          </div>
+
+          <div class="sensor-card">
+            <div class="sensor-name">Pressure</div>
+            <div class="sensor-value"><span id="pressure-value">--</span></div>
+            <div class="bar-wrap"><div id="pressure-bar" class="bar"></div></div>
+          </div>
+
+          <div class="sensor-card">
+            <div class="sensor-name">Airflow</div>
+            <div class="sensor-value"><span id="airflow-value">--</span></div>
+            <div class="bar-wrap"><div id="airflow-bar" class="bar"></div></div>
+          </div>
+
+          <div class="sensor-card">
+            <div class="sensor-name">Particles</div>
+            <div class="sensor-value"><span id="particles-value">--</span></div>
+            <div class="bar-wrap"><div id="particles-bar" class="bar"></div></div>
+          </div>
+        </div>
+
+        <div class="footer-info">
+          <div>Source: <strong id="plc-ip">MQTT Cloud</strong></div>
+          <div>Last update: <strong id="last-update">--</strong></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>System States</h2>
+        <div class="states-grid">
+          <div class="state-item"><span class="state-name">Tool Running</span><span id="state-tool" class="state-pill">--</span></div>
+          <div class="state-item"><span class="state-name">Door Open</span><span id="state-door" class="state-pill">--</span></div>
+          <div class="state-item"><span class="state-name">Fan Running</span><span id="state-fan" class="state-pill">--</span></div>
+          <div class="state-item"><span class="state-name">UV ON</span><span id="state-uv" class="state-pill">--</span></div>
+          <div class="state-item"><span class="state-name">Alarm Active</span><span id="state-alarm" class="state-pill">--</span></div>
+          <div class="state-item"><span class="state-name">E-Stop</span><span id="state-estop" class="state-pill">--</span></div>
+          <div class="state-item"><span class="state-name">System Ready</span><span id="state-ready" class="state-pill">--</span></div>
+          <div class="state-item"><span class="state-name">Auto Mode</span><span id="state-auto" class="state-pill">--</span></div>
+          <div class="state-item"><span class="state-name">Manual Mode</span><span id="state-manual" class="state-pill">--</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="panel">
+        <h2>Commands</h2>
+        <div class="small-muted" style="margin-bottom: 12px;">
+          This dashboard sends MQTT commands to the local Smart Lab gateway.
+        </div>
+
+        <div class="commands-grid">
+          <div class="command-group">
+            <h3>Tool Control</h3>
+            <div class="btn-row">
+              <button class="btn-green" onclick="sendAction('Cmd_StartTool')">Start Tool</button>
+              <button class="btn-red" onclick="sendAction('Cmd_StopTool')">Stop Tool</button>
+              <button class="btn-yellow" onclick="sendAction('Cmd_ResetAlarm')">Reset Alarm</button>
+            </div>
+          </div>
+
+          <div class="command-group">
+            <h3>Mode Control</h3>
+            <div class="btn-row">
+              <button class="btn-blue" onclick="sendAction('Cmd_AutoMode')">Auto Mode</button>
+              <button class="btn-purple" onclick="sendAction('Cmd_ManualMode')">Manual Mode</button>
+            </div>
+          </div>
+
+          <div class="command-group">
+            <h3>Safety</h3>
+            <div class="btn-row">
+              <button class="btn-red" onclick="sendAction('Cmd_EmergencyStop')">E-Stop ON</button>
+            </div>
+          </div>
+
+          <div class="command-group">
+            <h3>Fan</h3>
+            <div class="btn-row">
+              <button class="btn-cyan" onclick="sendAction('Cmd_FanEnable')">Fan Enable</button>
+            </div>
+          </div>
+
+          <div class="command-group">
+            <h3>UV</h3>
+            <div class="btn-row">
+              <button class="btn-cyan" onclick="sendAction('Cmd_UVEnable')">UV Enable</button>
+            </div>
+          </div>
+
+          <div class="command-group">
+            <h3>Door</h3>
+            <div class="btn-row">
+              <button class="btn-yellow" onclick="sendAction('Cmd_DoorUnlock')">Door Unlock</button>
+            </div>
+          </div>
+
+          <div class="command-group">
+            <h3>Humidity Control</h3>
+            <div class="btn-row">
+              <button class="btn-cyan" onclick="sendAction('Cmd_Dehumidifier')">Dehumidifier Enable</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="log-box" id="command-log">Ready.</div>
+      </div>
+
+      <div class="panel">
+        <h2>Alarms</h2>
+        <div class="alarms-list">
+          <div class="alarm-item"><span>Door Open During Run</span><span id="alm-door-run" class="state-pill">--</span></div>
+          <div class="alarm-item"><span>Low Pressure</span><span id="alm-low-pressure" class="state-pill">--</span></div>
+          <div class="alarm-item"><span>High Particles</span><span id="alm-high-particles" class="state-pill">--</span></div>
+          <div class="alarm-item"><span>Fan Failure</span><span id="alm-fan-failure" class="state-pill">--</span></div>
+          <div class="alarm-item"><span>Emergency Stop</span><span id="alm-estop" class="state-pill">--</span></div>
+          <div class="alarm-item"><span>High Temperature</span><span id="alm-high-temp" class="state-pill">--</span></div>
+          <div class="alarm-item"><span>High Humidity</span><span id="alm-high-humidity" class="state-pill">--</span></div>
+          <div class="alarm-item"><span>Low Airflow</span><span id="alm-low-airflow" class="state-pill">--</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script>
+    const socket = io();
+
+    function setBoolBadge(elementId, value, trueText = "ON", falseText = "OFF") {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      el.textContent = value ? trueText : falseText;
+      el.className = "state-pill " + (value ? "ok" : "bad");
+    }
+
+    function setTopBadge(elementId, text, typeClass) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      el.textContent = text;
+      el.className = "badge " + typeClass;
+    }
+
+    function setValue(id, value, digits = 2) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (typeof value === "number") {
+        el.textContent = value.toFixed(digits);
+      } else {
+        el.textContent = value ?? "--";
+      }
+    }
+
+    function setBar(id, value, min, max) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const raw = (typeof value === "number") ? value : min;
+      const clamped = Math.max(min, Math.min(max, raw));
+      const percent = ((clamped - min) / (max - min)) * 100;
+      el.style.width = percent + "%";
+    }
+
+    async function sendCommand(name, value) {
+      try {
+        const response = await fetch("/api/command", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, value })
+        });
+
+        const result = await response.json();
+        const log = document.getElementById("command-log");
+
+        if (result.ok) {
+          log.textContent = `MQTT command sent: ${result.mqtt_topic} -> ${result.mqtt_payload}`;
+        } else {
+          log.textContent = `Command error: ${result.error}`;
+        }
+      } catch (error) {
+        document.getElementById("command-log").textContent =
+          `Request failed: ${error}`;
+      }
+    }
+
+    function sendAction(name) {
+      sendCommand(name, true);
+    }
+
+    function updateDashboard(data) {
+      document.getElementById("plc-ip").textContent = data.source || "MQTT Cloud";
+      document.getElementById("last-update").textContent =
+        new Date((data.timestamp || Date.now() / 1000) * 1000).toLocaleTimeString();
+
+      if (data.connected) {
+        setTopBadge("badge-connection", "SMART LAB: ONLINE", "ok");
+      } else {
+        setTopBadge("badge-connection", "SMART LAB: OFFLINE", "bad");
+      }
+
+      const autoMode = data.auto ?? data.Sts_AutoMode;
+      const manualMode = data.manual ?? data.Sts_ManualMode;
+      const systemReady = data.ready ?? data.Sts_SystemReady;
+      const safeState = data.perm_safe ?? data.Perm_SafeState;
+
+      const modeText = autoMode ? "Mode: AUTO" :
+                       manualMode ? "Mode: MANUAL" :
+                       "Mode: --";
+      const modeClass = autoMode ? "ok" :
+                        manualMode ? "warn" : "";
+      setTopBadge("badge-mode", modeText, modeClass);
+
+      setTopBadge("badge-system",
+        systemReady ? "System: READY" : "System: NOT READY",
+        systemReady ? "ok" : "bad"
+      );
+
+      setTopBadge("badge-safe",
+        safeState ? "Safe: YES" : "Safe: NO",
+        safeState ? "ok" : "bad"
+      );
+
+      const temp = data.temp ?? data.Val_Temperature;
+      const hum = data.hum ?? data.Val_Humidity;
+      const press = data.press ?? data.Val_Pressure;
+      const air = data.air ?? data.Val_Airflow;
+      const parts = data.parts ?? data.Val_ParticleCount;
+
+      setValue("temp-value", temp, 2);
+      setValue("humidity-value", hum, 2);
+      setValue("pressure-value", press, 2);
+      setValue("airflow-value", air, 3);
+      setValue("particles-value", parts, 0);
+
+      setBar("temp-bar", temp, 15, 35);
+      setBar("humidity-bar", hum, 20, 80);
+      setBar("pressure-bar", press, 0, 20);
+      setBar("airflow-bar", air, 0, 3);
+      setBar("particles-bar", parts, 0, 500);
+
+      setBoolBadge("state-tool", data.tool ?? data.Sts_ToolRunning, "RUN", "STOP");
+      setBoolBadge("state-door", data.door ?? data.Sts_DoorOpen, "OPEN", "CLOSED");
+      setBoolBadge("state-fan", data.fan ?? data.Sts_FanRunning, "RUNNING", "OFF");
+      setBoolBadge("state-uv", data.uv ?? data.Sts_UVOn, "ON", "OFF");
+      setBoolBadge("state-alarm", data.alarm ?? data.Sts_AlarmActive, "ACTIVE", "CLEAR");
+      setBoolBadge("state-estop", data.estop ?? data.Sts_EStop, "ACTIVE", "NORMAL");
+      setBoolBadge("state-ready", systemReady, "READY", "NOT READY");
+      setBoolBadge("state-auto", autoMode, "AUTO", "OFF");
+      setBoolBadge("state-manual", manualMode, "MANUAL", "OFF");
+
+      setBoolBadge("alm-door-run", data.alm_door ?? data.Alm_DoorOpenDuringRun, "ALARM", "OK");
+      setBoolBadge("alm-low-pressure", data.alm_press ?? data.Alm_LowPressure, "ALARM", "OK");
+      setBoolBadge("alm-high-particles", data.alm_parts ?? data.Alm_HighParticles, "ALARM", "OK");
+      setBoolBadge("alm-fan-failure", data.alm_fan ?? data.Alm_FanFailure, "ALARM", "OK");
+      setBoolBadge("alm-estop", data.alm_estop ?? data.Alm_EmergencyStop, "ALARM", "OK");
+      setBoolBadge("alm-high-temp", data.alm_temp ?? data.Alm_HighTemperature, "ALARM", "OK");
+      setBoolBadge("alm-high-humidity", data.alm_hum ?? data.Alm_HighHumidity, "ALARM", "OK");
+      setBoolBadge("alm-low-airflow", data.alm_air ?? data.Alm_LowAirFlow, "ALARM", "OK");
+    }
+
+    socket.on("connect", () => {
+      document.getElementById("command-log").textContent = "Dashboard connected.";
+    });
+
+    socket.on("state_update", (data) => {
+      updateDashboard(data);
+    });
+
+    socket.on("command_result", (result) => {
+      const log = document.getElementById("command-log");
+      if (result.ok) {
+        log.textContent = `MQTT command sent: ${result.mqtt_topic} -> ${result.mqtt_payload}`;
+      } else {
+        log.textContent = `Command error: ${result.error}`;
+      }
+    });
+
+    fetch("/api/state")
+      .then(res => res.json())
+      .then(data => updateDashboard(data))
+      .catch(() => {
+        document.getElementById("command-log").textContent =
+          "Initial state fetch failed. Waiting for MQTT live updates...";
+      });
+  </script>
+</body>
+</html>
