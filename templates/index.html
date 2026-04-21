@@ -21,7 +21,9 @@
       --purple: #8b5cf6;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
@@ -281,17 +283,31 @@
     }
 
     @media (max-width: 1100px) {
-      .grid { grid-template-columns: 1fr; }
-      .cards { grid-template-columns: repeat(2, 1fr); }
-      .states-grid, .commands-grid, .alarms-list { grid-template-columns: 1fr; }
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .states-grid,
+      .commands-grid,
+      .alarms-list {
+        grid-template-columns: 1fr;
+      }
     }
 
     @media (max-width: 700px) {
-      .cards { grid-template-columns: 1fr; }
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
       .header {
         flex-direction: column;
         align-items: flex-start;
       }
+
       .top-status {
         justify-content: flex-start;
       }
@@ -304,12 +320,12 @@
       <div>
         <div class="title">SMART LAB MONITORING</div>
         <div class="subtitle">
-          Internet dashboard via MQTT Cloud — Sensors, states, alarms, and commands
+          Real-time PLC supervision dashboard — Sensors, states, alarms, and commands
         </div>
       </div>
 
       <div class="top-status">
-        <div id="badge-connection" class="badge warn">SMART LAB: WAITING</div>
+        <div id="badge-connection" class="badge warn">PLC: CONNECTING</div>
         <div id="badge-mode" class="badge">Mode: --</div>
         <div id="badge-system" class="badge">System: --</div>
         <div id="badge-safe" class="badge">Safe: --</div>
@@ -352,7 +368,7 @@
         </div>
 
         <div class="footer-info">
-          <div>Source: <strong id="plc-ip">MQTT Cloud</strong></div>
+          <div>PLC IP: <strong id="plc-ip">192.168.1.101</strong></div>
           <div>Last update: <strong id="last-update">--</strong></div>
         </div>
       </div>
@@ -360,15 +376,42 @@
       <div class="panel">
         <h2>System States</h2>
         <div class="states-grid">
-          <div class="state-item"><span class="state-name">Tool Running</span><span id="state-tool" class="state-pill">--</span></div>
-          <div class="state-item"><span class="state-name">Door Open</span><span id="state-door" class="state-pill">--</span></div>
-          <div class="state-item"><span class="state-name">Fan Running</span><span id="state-fan" class="state-pill">--</span></div>
-          <div class="state-item"><span class="state-name">UV ON</span><span id="state-uv" class="state-pill">--</span></div>
-          <div class="state-item"><span class="state-name">Alarm Active</span><span id="state-alarm" class="state-pill">--</span></div>
-          <div class="state-item"><span class="state-name">E-Stop</span><span id="state-estop" class="state-pill">--</span></div>
-          <div class="state-item"><span class="state-name">System Ready</span><span id="state-ready" class="state-pill">--</span></div>
-          <div class="state-item"><span class="state-name">Auto Mode</span><span id="state-auto" class="state-pill">--</span></div>
-          <div class="state-item"><span class="state-name">Manual Mode</span><span id="state-manual" class="state-pill">--</span></div>
+          <div class="state-item">
+            <span class="state-name">Tool Running</span>
+            <span id="state-tool" class="state-pill">--</span>
+          </div>
+          <div class="state-item">
+            <span class="state-name">Door Open</span>
+            <span id="state-door" class="state-pill">--</span>
+          </div>
+          <div class="state-item">
+            <span class="state-name">Fan Running</span>
+            <span id="state-fan" class="state-pill">--</span>
+          </div>
+          <div class="state-item">
+            <span class="state-name">UV ON</span>
+            <span id="state-uv" class="state-pill">--</span>
+          </div>
+          <div class="state-item">
+            <span class="state-name">Alarm Active</span>
+            <span id="state-alarm" class="state-pill">--</span>
+          </div>
+          <div class="state-item">
+            <span class="state-name">E-Stop</span>
+            <span id="state-estop" class="state-pill">--</span>
+          </div>
+          <div class="state-item">
+            <span class="state-name">System Ready</span>
+            <span id="state-ready" class="state-pill">--</span>
+          </div>
+          <div class="state-item">
+            <span class="state-name">Auto Mode</span>
+            <span id="state-auto" class="state-pill">--</span>
+          </div>
+          <div class="state-item">
+            <span class="state-name">Manual Mode</span>
+            <span id="state-manual" class="state-pill">--</span>
+          </div>
         </div>
       </div>
     </div>
@@ -377,59 +420,64 @@
       <div class="panel">
         <h2>Commands</h2>
         <div class="small-muted" style="margin-bottom: 12px;">
-          This dashboard sends MQTT commands to the local Smart Lab gateway.
+          Buttons send commands to DB100 in real time.
         </div>
 
         <div class="commands-grid">
           <div class="command-group">
             <h3>Tool Control</h3>
             <div class="btn-row">
-              <button class="btn-green" onclick="sendAction('Cmd_StartTool')">Start Tool</button>
-              <button class="btn-red" onclick="sendAction('Cmd_StopTool')">Stop Tool</button>
-              <button class="btn-yellow" onclick="sendAction('Cmd_ResetAlarm')">Reset Alarm</button>
+              <button class="btn-green" onclick="pulseCommand('Cmd_StartTool')">Start Tool</button>
+              <button class="btn-red" onclick="pulseCommand('Cmd_StopTool')">Stop Tool</button>
+              <button class="btn-yellow" onclick="pulseCommand('Cmd_ResetAlarm')">Reset Alarm</button>
             </div>
           </div>
 
           <div class="command-group">
             <h3>Mode Control</h3>
             <div class="btn-row">
-              <button class="btn-blue" onclick="sendAction('Cmd_AutoMode')">Auto Mode</button>
-              <button class="btn-purple" onclick="sendAction('Cmd_ManualMode')">Manual Mode</button>
+              <button class="btn-blue" onclick="setModeAuto()">Auto Mode</button>
+              <button class="btn-purple" onclick="setModeManual()">Manual Mode</button>
             </div>
           </div>
 
           <div class="command-group">
             <h3>Safety</h3>
             <div class="btn-row">
-              <button class="btn-red" onclick="sendAction('Cmd_EmergencyStop')">E-Stop ON</button>
+              <button class="btn-red" onclick="setCommand('Cmd_EmergencyStop', true)">E-Stop ON</button>
+              <button class="btn-green" onclick="setCommand('Cmd_EmergencyStop', false)">E-Stop OFF</button>
             </div>
           </div>
 
           <div class="command-group">
             <h3>Fan</h3>
             <div class="btn-row">
-              <button class="btn-cyan" onclick="sendAction('Cmd_FanEnable')">Fan Enable</button>
+              <button class="btn-cyan" onclick="setCommand('Cmd_FanEnable', true)">Fan ON</button>
+              <button class="btn-red" onclick="setCommand('Cmd_FanEnable', false)">Fan OFF</button>
             </div>
           </div>
 
           <div class="command-group">
             <h3>UV</h3>
             <div class="btn-row">
-              <button class="btn-cyan" onclick="sendAction('Cmd_UVEnable')">UV Enable</button>
+              <button class="btn-cyan" onclick="setCommand('Cmd_UVEnable', true)">UV ON</button>
+              <button class="btn-red" onclick="setCommand('Cmd_UVEnable', false)">UV OFF</button>
             </div>
           </div>
 
           <div class="command-group">
             <h3>Door</h3>
             <div class="btn-row">
-              <button class="btn-yellow" onclick="sendAction('Cmd_DoorUnlock')">Door Unlock</button>
+              <button class="btn-yellow" onclick="setCommand('Cmd_DoorUnlock', true)">Open / Unlock</button>
+              <button class="btn-blue" onclick="setCommand('Cmd_DoorUnlock', false)">Close / Lock</button>
             </div>
           </div>
 
           <div class="command-group">
             <h3>Humidity Control</h3>
             <div class="btn-row">
-              <button class="btn-cyan" onclick="sendAction('Cmd_Dehumidifier')">Dehumidifier Enable</button>
+              <button class="btn-cyan" onclick="setCommand('Cmd_Dehumidifier', true)">Dehumidifier ON</button>
+              <button class="btn-red" onclick="setCommand('Cmd_Dehumidifier', false)">Dehumidifier OFF</button>
             </div>
           </div>
         </div>
@@ -440,14 +488,38 @@
       <div class="panel">
         <h2>Alarms</h2>
         <div class="alarms-list">
-          <div class="alarm-item"><span>Door Open During Run</span><span id="alm-door-run" class="state-pill">--</span></div>
-          <div class="alarm-item"><span>Low Pressure</span><span id="alm-low-pressure" class="state-pill">--</span></div>
-          <div class="alarm-item"><span>High Particles</span><span id="alm-high-particles" class="state-pill">--</span></div>
-          <div class="alarm-item"><span>Fan Failure</span><span id="alm-fan-failure" class="state-pill">--</span></div>
-          <div class="alarm-item"><span>Emergency Stop</span><span id="alm-estop" class="state-pill">--</span></div>
-          <div class="alarm-item"><span>High Temperature</span><span id="alm-high-temp" class="state-pill">--</span></div>
-          <div class="alarm-item"><span>High Humidity</span><span id="alm-high-humidity" class="state-pill">--</span></div>
-          <div class="alarm-item"><span>Low Airflow</span><span id="alm-low-airflow" class="state-pill">--</span></div>
+          <div class="alarm-item">
+            <span>Door Open During Run</span>
+            <span id="alm-door-run" class="state-pill">--</span>
+          </div>
+          <div class="alarm-item">
+            <span>Low Pressure</span>
+            <span id="alm-low-pressure" class="state-pill">--</span>
+          </div>
+          <div class="alarm-item">
+            <span>High Particles</span>
+            <span id="alm-high-particles" class="state-pill">--</span>
+          </div>
+          <div class="alarm-item">
+            <span>Fan Failure</span>
+            <span id="alm-fan-failure" class="state-pill">--</span>
+          </div>
+          <div class="alarm-item">
+            <span>Emergency Stop</span>
+            <span id="alm-estop" class="state-pill">--</span>
+          </div>
+          <div class="alarm-item">
+            <span>High Temperature</span>
+            <span id="alm-high-temp" class="state-pill">--</span>
+          </div>
+          <div class="alarm-item">
+            <span>High Humidity</span>
+            <span id="alm-high-humidity" class="state-pill">--</span>
+          </div>
+          <div class="alarm-item">
+            <span>Low Airflow</span>
+            <span id="alm-low-airflow" class="state-pill">--</span>
+          </div>
         </div>
       </div>
     </div>
@@ -484,13 +556,13 @@
     function setBar(id, value, min, max) {
       const el = document.getElementById(id);
       if (!el) return;
-      const raw = (typeof value === "number") ? value : min;
-      const clamped = Math.max(min, Math.min(max, raw));
+
+      const clamped = Math.max(min, Math.min(max, value ?? min));
       const percent = ((clamped - min) / (max - min)) * 100;
       el.style.width = percent + "%";
     }
 
-    async function sendCommand(name, value) {
+    async function setCommand(name, value) {
       try {
         const response = await fetch("/api/command", {
           method: "POST",
@@ -502,7 +574,7 @@
         const log = document.getElementById("command-log");
 
         if (result.ok) {
-          log.textContent = `MQTT command sent: ${result.mqtt_topic} -> ${result.mqtt_payload}`;
+          log.textContent = `Command sent: ${name} = ${value}`;
         } else {
           log.textContent = `Command error: ${result.error}`;
         }
@@ -512,83 +584,87 @@
       }
     }
 
-    function sendAction(name) {
-      sendCommand(name, true);
+    async function pulseCommand(name, durationMs = 1500) {
+      await setCommand(name, true);
+      setTimeout(() => {
+        setCommand(name, false);
+      }, durationMs);
+    }
+
+    async function setModeAuto() {
+      await setCommand("Cmd_ManualMode", false);
+      await setCommand("Cmd_AutoMode", true);
+      document.getElementById("command-log").textContent = "Auto mode requested.";
+    }
+
+    async function setModeManual() {
+      await setCommand("Cmd_AutoMode", false);
+      await setCommand("Cmd_ManualMode", true);
+      document.getElementById("command-log").textContent = "Manual mode requested.";
     }
 
     function updateDashboard(data) {
-      document.getElementById("plc-ip").textContent = data.source || "MQTT Cloud";
+      document.getElementById("plc-ip").textContent = data.plc_ip || "--";
       document.getElementById("last-update").textContent =
         new Date((data.timestamp || Date.now() / 1000) * 1000).toLocaleTimeString();
 
+      // Top badges
       if (data.connected) {
-        setTopBadge("badge-connection", "SMART LAB: ONLINE", "ok");
+        setTopBadge("badge-connection", "PLC: CONNECTED", "ok");
       } else {
-        setTopBadge("badge-connection", "SMART LAB: OFFLINE", "bad");
+        setTopBadge("badge-connection", "PLC: DISCONNECTED", "bad");
       }
 
-      const autoMode = data.auto ?? data.Sts_AutoMode;
-      const manualMode = data.manual ?? data.Sts_ManualMode;
-      const systemReady = data.ready ?? data.Sts_SystemReady;
-      const safeState = data.perm_safe ?? data.Perm_SafeState;
-
-      const modeText = autoMode ? "Mode: AUTO" :
-                       manualMode ? "Mode: MANUAL" :
+      const modeText = data.Sts_AutoMode ? "Mode: AUTO" :
+                       data.Sts_ManualMode ? "Mode: MANUAL" :
                        "Mode: --";
-      const modeClass = autoMode ? "ok" :
-                        manualMode ? "warn" : "";
+      const modeClass = data.Sts_AutoMode ? "ok" :
+                        data.Sts_ManualMode ? "warn" : "";
       setTopBadge("badge-mode", modeText, modeClass);
 
-      setTopBadge("badge-system",
-        systemReady ? "System: READY" : "System: NOT READY",
-        systemReady ? "ok" : "bad"
-      );
+      const systemText = data.Sts_SystemReady ? "System: READY" : "System: NOT READY";
+      setTopBadge("badge-system", systemText, data.Sts_SystemReady ? "ok" : "bad");
 
-      setTopBadge("badge-safe",
-        safeState ? "Safe: YES" : "Safe: NO",
-        safeState ? "ok" : "bad"
-      );
+      const safeText = data.Perm_SafeState ? "Safe: YES" : "Safe: NO";
+      setTopBadge("badge-safe", safeText, data.Perm_SafeState ? "ok" : "bad");
 
-      const temp = data.temp ?? data.Val_Temperature;
-      const hum = data.hum ?? data.Val_Humidity;
-      const press = data.press ?? data.Val_Pressure;
-      const air = data.air ?? data.Val_Airflow;
-      const parts = data.parts ?? data.Val_ParticleCount;
+      // Sensors
+      setValue("temp-value", data.Val_Temperature, 2);
+      setValue("humidity-value", data.Val_Humidity, 2);
+      setValue("pressure-value", data.Val_Pressure, 2);
+      setValue("airflow-value", data.Val_Airflow, 3);
+      setValue("particles-value", data.Val_ParticleCount, 0);
 
-      setValue("temp-value", temp, 2);
-      setValue("humidity-value", hum, 2);
-      setValue("pressure-value", press, 2);
-      setValue("airflow-value", air, 3);
-      setValue("particles-value", parts, 0);
+      setBar("temp-bar", data.Val_Temperature, 15, 35);
+      setBar("humidity-bar", data.Val_Humidity, 20, 80);
+      setBar("pressure-bar", data.Val_Pressure, 0, 20);
+      setBar("airflow-bar", data.Val_Airflow, 0, 1.2);
+      setBar("particles-bar", data.Val_ParticleCount, 0, 300);
 
-      setBar("temp-bar", temp, 15, 35);
-      setBar("humidity-bar", hum, 20, 80);
-      setBar("pressure-bar", press, 0, 20);
-      setBar("airflow-bar", air, 0, 3);
-      setBar("particles-bar", parts, 0, 500);
+      // States
+      setBoolBadge("state-tool", data.Sts_ToolRunning, "RUN", "STOP");
+      setBoolBadge("state-door", data.Sts_DoorOpen, "OPEN", "CLOSED");
+      setBoolBadge("state-fan", data.Sts_FanRunning, "RUNNING", "OFF");
+      setBoolBadge("state-uv", data.Sts_UVOn, "ON", "OFF");
+      setBoolBadge("state-alarm", data.Sts_AlarmActive, "ACTIVE", "CLEAR");
+      setBoolBadge("state-estop", data.Sts_EStop, "ACTIVE", "NORMAL");
+      setBoolBadge("state-ready", data.Sts_SystemReady, "READY", "NOT READY");
+      setBoolBadge("state-auto", data.Sts_AutoMode, "AUTO", "OFF");
+      setBoolBadge("state-manual", data.Sts_ManualMode, "MANUAL", "OFF");
 
-      setBoolBadge("state-tool", data.tool ?? data.Sts_ToolRunning, "RUN", "STOP");
-      setBoolBadge("state-door", data.door ?? data.Sts_DoorOpen, "OPEN", "CLOSED");
-      setBoolBadge("state-fan", data.fan ?? data.Sts_FanRunning, "RUNNING", "OFF");
-      setBoolBadge("state-uv", data.uv ?? data.Sts_UVOn, "ON", "OFF");
-      setBoolBadge("state-alarm", data.alarm ?? data.Sts_AlarmActive, "ACTIVE", "CLEAR");
-      setBoolBadge("state-estop", data.estop ?? data.Sts_EStop, "ACTIVE", "NORMAL");
-      setBoolBadge("state-ready", systemReady, "READY", "NOT READY");
-      setBoolBadge("state-auto", autoMode, "AUTO", "OFF");
-      setBoolBadge("state-manual", manualMode, "MANUAL", "OFF");
-
-      setBoolBadge("alm-door-run", data.alm_door ?? data.Alm_DoorOpenDuringRun, "ALARM", "OK");
-      setBoolBadge("alm-low-pressure", data.alm_press ?? data.Alm_LowPressure, "ALARM", "OK");
-      setBoolBadge("alm-high-particles", data.alm_parts ?? data.Alm_HighParticles, "ALARM", "OK");
-      setBoolBadge("alm-fan-failure", data.alm_fan ?? data.Alm_FanFailure, "ALARM", "OK");
-      setBoolBadge("alm-estop", data.alm_estop ?? data.Alm_EmergencyStop, "ALARM", "OK");
-      setBoolBadge("alm-high-temp", data.alm_temp ?? data.Alm_HighTemperature, "ALARM", "OK");
-      setBoolBadge("alm-high-humidity", data.alm_hum ?? data.Alm_HighHumidity, "ALARM", "OK");
-      setBoolBadge("alm-low-airflow", data.alm_air ?? data.Alm_LowAirFlow, "ALARM", "OK");
+      // Alarms
+      setBoolBadge("alm-door-run", data.Alm_DoorOpenDuringRun, "ALARM", "OK");
+      setBoolBadge("alm-low-pressure", data.Alm_LowPressure, "ALARM", "OK");
+      setBoolBadge("alm-high-particles", data.Alm_HighParticles, "ALARM", "OK");
+      setBoolBadge("alm-fan-failure", data.Alm_FanFailure, "ALARM", "OK");
+      setBoolBadge("alm-estop", data.Alm_EmergencyStop, "ALARM", "OK");
+      setBoolBadge("alm-high-temp", data.Alm_HighTemperature, "ALARM", "OK");
+      setBoolBadge("alm-high-humidity", data.Alm_HighHumidity, "ALARM", "OK");
+      setBoolBadge("alm-low-airflow", data.Alm_LowAirFlow, "ALARM", "OK");
     }
 
     socket.on("connect", () => {
-      document.getElementById("command-log").textContent = "Dashboard connected.";
+      document.getElementById("command-log").textContent = "Socket connected.";
     });
 
     socket.on("state_update", (data) => {
@@ -598,18 +674,19 @@
     socket.on("command_result", (result) => {
       const log = document.getElementById("command-log");
       if (result.ok) {
-        log.textContent = `MQTT command sent: ${result.mqtt_topic} -> ${result.mqtt_payload}`;
+        log.textContent = `Socket command sent: ${result.name} = ${result.value}`;
       } else {
-        log.textContent = `Command error: ${result.error}`;
+        log.textContent = `Socket command error: ${result.error}`;
       }
     });
 
+    // initial fetch
     fetch("/api/state")
       .then(res => res.json())
       .then(data => updateDashboard(data))
       .catch(() => {
         document.getElementById("command-log").textContent =
-          "Initial state fetch failed. Waiting for MQTT live updates...";
+          "Initial state fetch failed. Waiting for live updates...";
       });
   </script>
 </body>
